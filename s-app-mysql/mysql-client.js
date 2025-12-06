@@ -169,8 +169,42 @@ class QueryBuilder {
 // Default MySQL API instance
 export const mysqlAPI = new MySQLAPI()
 
-// Legacy Supabase compatibility interface
-export const supabase = {
+// Simple in-memory storage shim so UI code expecting storage does not crash
+function createInMemoryStorage() {
+  const buckets = new Map()
+
+  const ensureBucket = (name) => {
+    if (!buckets.has(name)) {
+      buckets.set(name, new Map())
+    }
+    return buckets.get(name)
+  }
+
+  return {
+    from(bucket) {
+      const bucketStore = ensureBucket(bucket)
+
+      return {
+        async upload(path, file) {
+          try {
+            bucketStore.set(path, { path, file })
+            return { data: { path }, error: null }
+          } catch (error) {
+            return { data: null, error: error?.message || 'Upload failed' }
+          }
+        },
+        getPublicUrl(path) {
+          const stored = bucketStore.get(path)
+          return { data: { publicUrl: stored ? `memory://${bucket}/${path}` : '' }, error: null }
+        },
+      }
+    },
+  }
+}
+
+const storage = createInMemoryStorage()
+
+export const mysqlClient = {
   from: (table) => ({
     select: (columns = '*') => new QueryBuilder(table, columns),
     insert: (data) => mysqlAPI.insert(table, data),

@@ -1,5 +1,12 @@
-// Browser-compatible MySQL API mock
-// V produkciji se to zamenja s pravo backend implementacijo
+// Browser-compatible MySQL API shim
+// V produkciji se to zamenja s pravo backend implementacijo, ki namesto Supabase uporablja MySQL
+
+type SelectOptions = {
+  orderBy?: string
+  ascending?: boolean
+  limit?: number
+  offset?: number
+}
 
 type SelectOptions = {
   orderBy?: string
@@ -168,8 +175,47 @@ class QueryBuilder {
 // Default MySQL API instance
 export const mysqlAPI = new MySQLAPI()
 
-// Legacy Supabase compatibility interface
-export const supabase = {
+type StoredObject = { url: string; path: string }
+
+function createInMemoryStorage() {
+  const buckets = new Map<string, Map<string, StoredObject>>()
+
+  const ensureBucket = (name: string) => {
+    if (!buckets.has(name)) {
+      buckets.set(name, new Map())
+    }
+    return buckets.get(name) as Map<string, StoredObject>
+  }
+
+  return {
+    from(bucket: string) {
+      const bucketStore = ensureBucket(bucket)
+
+      return {
+        async upload(path: string, file: File) {
+          try {
+            const objectUrl = URL.createObjectURL(file)
+            bucketStore.set(path, { url: objectUrl, path })
+            return { data: { path }, error: null }
+          } catch (error: any) {
+            return { data: null, error: error?.message || 'Upload failed' }
+          }
+        },
+
+        getPublicUrl(path: string) {
+          const stored = bucketStore.get(path)
+          const publicUrl = stored?.url || ''
+          return { data: { publicUrl }, error: null }
+        },
+      }
+    },
+  }
+}
+
+const storage = createInMemoryStorage()
+
+// Supabase-like interface renamed to mysqlClient for MySQL-only mode
+export const mysqlClient = {
   from: (table: string) => ({
     select: (columns = '*') => new QueryBuilder(table, columns),
     insert: (data: any) => mysqlAPI.insert(table, data),
@@ -194,10 +240,8 @@ export const supabase = {
   },
 }
 
-// Export MySQL API as default for backward compatibility
-export default supabase
+// Backward-compatible alias so existing imports keep working while the app runs purely on MySQL
+export const supabase = mysqlClient
 
-// Legacy validation function for compatibility
-export function validateSupabaseConfig() {
-  return true
-}
+// Export MySQL client as default
+export default mysqlClient
