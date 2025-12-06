@@ -101,7 +101,7 @@ pnpm preview
 Host: 195.35.53.6
 Port: 3306
 Database: u816302701_standario2025
-Username: u816302701
+Username: u816302701_virtual
 ```
 
 **Environment variables:**
@@ -109,7 +109,7 @@ Username: u816302701
 VITE_MYSQL_HOST=195.35.53.6
 VITE_MYSQL_PORT=3306
 VITE_MYSQL_DATABASE=u816302701_standario2025
-VITE_MYSQL_USERNAME=u816302701
+VITE_MYSQL_USER=u816302701_virtual
 VITE_MYSQL_PASSWORD=<your-password>
 ```
 

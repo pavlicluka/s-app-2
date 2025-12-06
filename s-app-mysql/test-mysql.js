@@ -4,7 +4,7 @@
  * Preveri osnovne funkcionalnosti MySQL povezave
  */
 
-import { MySQLAPI } from './src/lib/mysql-client.ts'
+import { mysqlAPI } from './mysql-client.js'
 
 console.log('🧪 ZAČENJAM MySQL TEST STANDARIO APLIKACIJE')
 console.log('=' .repeat(50))
@@ -91,23 +91,23 @@ async function testDataIntegrity() {
 
 async function testEnvironmentConfiguration() {
   console.log('\n4️⃣ TESTIRA OKOLJSKO KONFIGURACIJO...')
-  
+
   // Preveri environment spremenljivke
-  const envVars = [
-    'VITE_MYSQL_HOST',
-    'VITE_MYSQL_PORT', 
-    'VITE_MYSQL_DATABASE',
-    'VITE_MYSQL_USER'
-  ]
-  
+  const envVars = {
+    VITE_MYSQL_HOST: '195.35.53.6',
+    VITE_MYSQL_PORT: '3306',
+    VITE_MYSQL_DATABASE: 'u816302701_standario2025',
+    VITE_MYSQL_USER: 'u816302701_virtual',
+    VITE_MYSQL_PASSWORD: '***'
+  }
+
   console.log('🔧 Environment spremenljivke:')
-  envVars.forEach(varName => {
-    const value = import.meta.env[varName]
-    if (value) {
-      console.log(`   ✅ ${varName}: ${varName.includes('PASSWORD') ? '***' : value}`)
-    } else {
-      console.log(`   ⚠️  ${varName}: ni nastavljeno (uporablja se fallback)`)
-    }
+  Object.entries(envVars).forEach(([varName, fallback]) => {
+    const value = process.env[varName] || fallback
+    const maskedValue = varName.includes('PASSWORD') && value !== fallback ? '***' : value
+    const status = process.env[varName] ? '✅' : 'ℹ️'
+
+    console.log(`   ${status} ${varName}: ${maskedValue}`)
   })
   
   return true
