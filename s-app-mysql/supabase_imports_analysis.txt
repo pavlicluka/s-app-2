@@ -1,0 +1,137 @@
+ANALIZA SUPABASE IMPORT-OV V /workspace/s-app-mysql/src/
+=========================================================
+
+DATOTEKE Z SUPABASE IMPORTI - ANALIZA PO TIPU UVOZA:
+
+1. SUPABASE KLIENT + TIPI KOMBINAJE (32 datotek):
+/workspace/s-app-mysql/src/components/AlertsPage.tsx | client_and_types | import { supabase, Incident } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/NIS2ControlsPage.tsx | client_and_types | import { supabase, NIS2Control } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/NIS2DocumentationPage.tsx | client_and_types | import { supabase, NIS2Documentation } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/NIS2Page.tsx | client_and_types | import { supabase, Incident } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/SupportPage.tsx | client_and_types | import { supabase, SupportRequest } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/WorkspacesPage.tsx | client_and_types | import { supabase, Device } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRDataBreachLogAdvancedModal.tsx | client_and_types | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRDataBreachLogAdvancedModal.tsx | type_only | import type { GDPRDataBreachLog } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/NIS2ControlsModal.tsx | client_and_types | import { supabase, NIS2Control } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/NIS2DocumentationModal.tsx | client_and_types | import { supabase, NIS2Documentation } from '../../lib/supabase'
+
+2. SAMO SUPABASE KLIENT (75 datotek):
+/workspace/s-app-mysql/src/components/FunctionLogsViewer.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/NIS2NonConformitiesPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/NIS2ResponsibilityManagementPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/NIS2SupplyChainPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/ZZPriDokumentacijaPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/ZZPriObrazciPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/ZZPriPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/ZZPriPostopkiPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/ZZPriPrijavePage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/ZZPriZaupnikiPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/common/CSVImportModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRComplianceEvidence.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRConsentManagement.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRControllerProcessor.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRDPIA.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRDataBreachLog.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRDataProtection.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRIncidentEvidence.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRPrivacyPolicy.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRProcessingActivitiesRecord.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRReminderSystem.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRRightForgotten.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRTransfersEvidence.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/gdpr/GDPRUsposabljanjaEvidence.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISMScope.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOAssetManagement.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOAuditLog.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOCertificationStatus.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOComplianceTracking.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOControlsManagement.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOIncidentResponse.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISORiskAssessment.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISORolesAndResponsibilities.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOSecurityPolicies.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/ISOStatementApplicability.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/iso/InformationSecurityPolicy.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/AIComplianceAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/AIComplianceUploadModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/AISystemsAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/AddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/ChangePasswordModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRAuditTrailAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRConsentManagementAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRControllerProcessorAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRControllerProcessorEditModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRDPIAAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRDPIAAdvancedModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRDataBreachLogAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRIncidentDetailModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRIncidentFormModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRPrivacyPolicyAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRProcessingActivitiesRecordAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRRightForgottenAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRTransfersEvidenceAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/GDPRUsposabljanjaEvidenceAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/ISMScopeAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/InformationSecurityPolicyAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/ModifyModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/NIS2RiskRegisterAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/SoAControlModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/ZVOP2ComplianceAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/ZZPriPostopkiAddModal.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/nis2/RiskRegister.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/organization/OrganizationSettingsPage.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/organization/OrganizationSwitcher.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/organization/UserInvitationUI.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/EducationModules.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/InventoryAssetDetails.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/InventoryDevices.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/InventoryExpiringItems.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/InventoryLicenses.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/InventorySoftware.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/Policies.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/Procedures.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/ProceduresDocuments.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/SettingsAdvancedConfig.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/SupportTicketManagement.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/other/Templates.tsx | client_only | import { supabase } from '../../lib/supabase'
+/workspace/s-app-mysql/src/hooks/useOrganization.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/hooks/useOrganizationId.ts | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/hooks/useProfile.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/lib/supabase.ts | internal_import | import { mysqlSupabase } from './mysql-supabase-wrapper'
+/workspace/s-app-mysql/src/pages/AuditTrailPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/pages/CyberIncidentReportPage.tsx | client_only | import { supabase } from '../lib/supabase'
+/workspace/s-app-mysql/src/pages/ProfileEditPage.tsx | client_only | import { supabase } from '../lib/supabase'
+
+3. SAMO TIPI (10 datotek):
+/workspace/s-app-mysql/src/components/SuperAdminPage.tsx | type_only | import { Profile } from '../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/DeviceDetailModal.tsx | type_only | import { Device } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/IncidentDetailModal.tsx | type_only | import { Incident } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/ReportDetailModal.tsx | type_only | import { CyberIncidentReport } from '../../lib/supabase'
+/workspace/s-app-mysql/src/components/modals/SupportDetailModal.tsx | type_only | import { SupportRequest } from '../../lib/supabase'
+/workspace/s-app-mysql/src/pages/CyberIncidentReportPage.tsx | type_only | import type { CyberIncidentReport } from '../lib/supabase'
+
+STATISTIKA:
+===========
+Skupno število datotek z supabase importi: 103
+- Klient + tipi kombinacije: 10 datotek (9.7%)
+- Samo klient: 83 datotek (80.6%)
+- Samo tipi: 10 datotek (9.7%)
+
+TIPI KI SE NAJPOGOSTEJE UPORABLJAJO:
+====================================
+1. Incident - 3x (AlertsPage, NIS2Page, IncidentDetailModal)
+2. Device - 2x (WorkspacesPage, DeviceDetailModal)
+3. SupportRequest - 2x (SupportPage, SupportDetailModal)
+4. Profile - 2x (SuperAdminPage, ProfileEditPage)
+5. CyberIncidentReport - 2x (CyberIncidentReportPage, ReportDetailModal)
+6. NIS2Control - 2x (NIS2ControlsPage, NIS2ControlsModal)
+7. NIS2Documentation - 2x (NIS2DocumentationPage, NIS2DocumentationModal)
+8. GDPRDataBreachLog - 1x (GDPRDataBreachLogAdvancedModal)
+
+OPOMBE:
+=======
+- Vse datoteke uporabljajo lib/supabase.ts kot vir importov
+- MySQL wrapper se izvozi kot "supabase" za nazajno združljivost
+- Uporaba "import type" za TypeScript tipe kjer je mogoče
+- Večina datotek (80.6%) potrebuje samo supabase klient za DB operacije
+- Tipi se uporabljajo za type safety in IntelliSense podporo

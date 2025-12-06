@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Standario</title>
+    <meta name="description" content="Standario - Upravljanje skladnosti z NIS2, ISO 27001, GDPR" />
+    <!-- MySQL Environment Configuration - Injected at build time -->
+    <script>
+      window.__ENV__ = {
+        VITE_MYSQL_HOST: "%VITE_MYSQL_HOST%",
+        VITE_MYSQL_PORT: "%VITE_MYSQL_PORT%",
+        VITE_MYSQL_DATABASE: "%VITE_MYSQL_DATABASE%",
+        VITE_MYSQL_USER: "%VITE_MYSQL_USER%",
+        VITE_MYSQL_PASSWORD: "%VITE_MYSQL_PASSWORD%",
+        VITE_JWT_SECRET: "%VITE_JWT_SECRET%"
+      };
+    </script>
+    <!-- Chatbot script - will be loaded dynamically after login in App.tsx -->
+    <script type="module" src="/src/main.tsx"></script>
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html> 

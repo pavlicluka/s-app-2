@@ -1,0 +1,16 @@
+{
+  "name": "standario-mysql-api",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "MySQL API Server for Standario Super Admin Dashboard",
+  "main": "api-profiles.js",
+  "scripts": {
+    "start": "node api-profiles.js",
+    "test": "node test-api.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mysql2": "^3.6.5",
+    "cors": "^2.8.5"
+  }
+}
