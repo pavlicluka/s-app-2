@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useAuth } from '../../contexts/AuthContext'
 import { X, ChevronLeft, ChevronRight, User, Calendar, BookOpen, Award, CheckCircle } from 'lucide-react'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRUsposabljanjaEvidenceAddModalProps {
   isOpen: boolean

@@ -39,6 +39,7 @@ import { useAuth } from '../contexts/AuthContext'
 import DataTable from './DataTable'
 import Modal from './common/Modal'
 import FunctionLogsViewer from './FunctionLogsViewer'
+import { supabase } from '../lib/supabase'
 
 interface DebugResponse {
   timestamp: string

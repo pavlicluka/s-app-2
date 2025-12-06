@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AlertTriangle, Clock, Bell, CheckCircle } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
+import { supabase } from '../../lib/supabase'
 
 interface ReminderAlert {
   breach_id: string

@@ -70,12 +70,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signIn = async (email: string, password: string) => {
-    console.log('🔐 AuthContext: MySQL signIn - poskušam se prijaviti', email)
+    const normalizedEmail = email.trim().toLowerCase()
+    console.log('🔐 AuthContext: MySQL signIn - poskušam se prijaviti', normalizedEmail)
     setLoading(true)
 
     try {
       // MySQL avtentikacija - poišči uporabnika v bazi
-      const { data: profiles, error } = await mysqlAPI.select('profiles', '*', 'email = ?', [email])
+      const { data: profiles, error } = await mysqlAPI.select('profiles', '*', 'email = ?', [normalizedEmail])
       
       if (error) {
         throw new Error('Napaka pri povezavi z bazo podatkov')
@@ -134,12 +135,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    console.log('📝 AuthContext: MySQL signUp - ustvarjam nov račun', email)
+    const normalizedEmail = email.trim().toLowerCase()
+    console.log('📝 AuthContext: MySQL signUp - ustvarjam nov račun', normalizedEmail)
     setLoading(true)
 
     try {
       // Preveri, če uporabnik že obstaja
-      const { data: existingProfiles } = await mysqlAPI.select('profiles', '*', 'email = ?', [email])
+      const { data: existingProfiles } = await mysqlAPI.select('profiles', '*', 'email = ?', [normalizedEmail])
       
       if (existingProfiles && existingProfiles.length > 0) {
         throw new Error('Uporabnik s tem e-poštnim naslovom že obstaja')
@@ -149,10 +151,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const newProfile = {
         id: crypto.randomUUID(),
         user_id: crypto.randomUUID(),
-        email: email,
+        email: normalizedEmail,
         full_name: fullName,
         role: 'user',
         is_active: true,
+        password_hash: await MySQLAuth.hashPassword(password),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }

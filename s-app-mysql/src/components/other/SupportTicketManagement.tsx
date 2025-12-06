@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { Headphones, Plus } from 'lucide-react'
 import SupportTicketManagementAddModal from '../modals/SupportTicketManagementAddModal'
+import { supabase } from '../../lib/supabase'
 
 export default function SupportTicketManagement() {
   const [records, setRecords] = useState<any[]>([])

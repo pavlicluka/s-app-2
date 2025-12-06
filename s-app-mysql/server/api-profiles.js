@@ -6,6 +6,7 @@
 import express from 'express';
 import mysql from 'mysql2/promise';
 import cors from 'cors';
+import crypto from 'crypto';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -29,6 +30,43 @@ const dbConfig = {
 // Create connection pool
 const pool = mysql.createPool(dbConfig);
 
+// Shared query helper
+async function runQuery(sql, params = []) {
+  try {
+    const [rows] = await pool.execute(sql, params);
+    return { data: rows, error: null };
+  } catch (error) {
+    console.error('MySQL Query Error:', error);
+    return { data: null, error: error.message };
+  }
+}
+
+// Build SELECT statement with optional clauses
+function buildSelectQuery(table, columns = '*', conditions = '', params = [], options = {}) {
+  let sql = `SELECT ${columns} FROM ${table}`;
+  const queryParams = [...params];
+
+  if (conditions) {
+    sql += ` WHERE ${conditions}`;
+  }
+
+  if (options.orderBy) {
+    sql += ` ORDER BY ${options.orderBy} ${options.ascending === false ? 'DESC' : 'ASC'}`;
+  }
+
+  if (options.limit) {
+    sql += ' LIMIT ?';
+    queryParams.push(options.limit);
+  }
+
+  if (options.offset) {
+    sql += ' OFFSET ?';
+    queryParams.push(options.offset);
+  }
+
+  return { sql, queryParams };
+}
+
 // Test database connection
 async function testConnection() {
   try {
@@ -39,6 +77,138 @@ async function testConnection() {
     console.error('❌ MySQL napaka:', error.message);
   }
 }
+
+// Generic MySQL endpoints used by the frontend compatibility layer
+app.post('/api/mysql/select', async (req, res) => {
+  const { table, columns = '*', conditions = '', params = [], options = {} } = req.body || {};
+
+  const { sql, queryParams } = buildSelectQuery(table, columns, conditions, params, options);
+  const result = await runQuery(sql, queryParams);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
+
+app.post('/api/mysql/query', async (req, res) => {
+  const { sql, params = [] } = req.body || {};
+  if (!sql) {
+    return res.status(400).json({ success: false, error: 'SQL statement is required' });
+  }
+
+  const result = await runQuery(sql, params);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
+
+app.post('/api/mysql/insert', async (req, res) => {
+  const { table, data } = req.body || {};
+  if (!table || !data || typeof data !== 'object') {
+    return res.status(400).json({ success: false, error: 'Invalid insert payload' });
+  }
+
+  const columns = Object.keys(data);
+  const placeholders = columns.map(() => '?').join(', ');
+  const values = columns.map(col => data[col]);
+  const sql = `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`;
+
+  const result = await runQuery(sql, values);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
+
+app.post('/api/mysql/update', async (req, res) => {
+  const { table, data, conditions = '', params = [] } = req.body || {};
+  if (!table || !data || typeof data !== 'object') {
+    return res.status(400).json({ success: false, error: 'Invalid update payload' });
+  }
+
+  const setClause = Object.keys(data).map(col => `${col} = ?`).join(', ');
+  const values = [...Object.values(data), ...params];
+  let sql = `UPDATE ${table} SET ${setClause}`;
+  if (conditions) {
+    sql += ` WHERE ${conditions}`;
+  }
+
+  const result = await runQuery(sql, values);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
+
+app.post('/api/mysql/delete', async (req, res) => {
+  const { table, conditions = '', params = [] } = req.body || {};
+  if (!table) {
+    return res.status(400).json({ success: false, error: 'Invalid delete payload' });
+  }
+
+  let sql = `DELETE FROM ${table}`;
+  if (conditions) {
+    sql += ` WHERE ${conditions}`;
+  }
+
+  const result = await runQuery(sql, params);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
+
+app.post('/api/mysql/batch-delete', async (req, res) => {
+  const { table, ids = [] } = req.body || {};
+  if (!table || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ success: false, error: 'Invalid batch delete payload' });
+  }
+
+  const placeholders = ids.map(() => '?').join(', ');
+  const sql = `DELETE FROM ${table} WHERE id IN (${placeholders})`;
+
+  const result = await runQuery(sql, ids);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
+
+app.post('/api/mysql/batch-update', async (req, res) => {
+  const { table, data, ids = [] } = req.body || {};
+  if (!table || !data || !Array.isArray(ids) || ids.length === 0) {
+    return res.status(400).json({ success: false, error: 'Invalid batch update payload' });
+  }
+
+  const setClause = Object.keys(data).map(col => `${col} = ?`).join(', ');
+  const placeholders = ids.map(() => '?').join(', ');
+  const sql = `UPDATE ${table} SET ${setClause} WHERE id IN (${placeholders})`;
+  const values = [...Object.values(data), ...ids];
+
+  const result = await runQuery(sql, values);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
+
+app.post('/api/mysql/search', async (req, res) => {
+  const { table, columns = [], searchTerm = '', options = {} } = req.body || {};
+  if (!table || !Array.isArray(columns) || columns.length === 0) {
+    return res.status(400).json({ success: false, error: 'Invalid search payload' });
+  }
+
+  const likeConditions = columns.map(col => `${col} LIKE ?`).join(' OR ');
+  const params = columns.map(() => `%${searchTerm}%`);
+  const { sql, queryParams } = buildSelectQuery(table, '*', likeConditions, params, options);
+
+  const result = await runQuery(sql, queryParams);
+  if (result.error) {
+    return res.status(500).json({ success: false, error: result.error });
+  }
+  return res.json({ success: true, data: result.data });
+});
 
 // GET /api/profiles - List all profiles
 app.get('/api/profiles', async (req, res) => {
