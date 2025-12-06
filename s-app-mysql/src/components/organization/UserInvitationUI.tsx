@@ -4,6 +4,7 @@ import { mysqlAPI } from '../../lib/mysql-client'
 import { useOrganization } from '../../hooks/useOrganization'
 import { useAuth } from '../../contexts/AuthContext'
 import Modal from '../common/Modal'
+import { supabase } from '../../lib/supabase'
 
 // OPOZORILO: Ta komponenta še vedno vsebuje runtime klic na Supabase edge funkcijo
 // za pošiljanje povabil. Glej funkcijo handleSendInvitation (vrstice 150-207)

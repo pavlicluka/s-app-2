@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext, createContext } from 'react'
 import { mysqlAPI } from '../lib/mysql-client'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 
 interface OrganizationContextType {
   organizationId: string | null

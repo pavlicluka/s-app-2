@@ -3,6 +3,7 @@ import { X, FileText } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRConsentManagementAddModalProps {
   isOpen: boolean

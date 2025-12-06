@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { X, Save, ArrowLeft, ArrowRight, AlertTriangle, Info, FileText, Users, Shield, CheckCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../../lib/mysql-client'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRIncidentFormModalProps {
   isOpen: boolean

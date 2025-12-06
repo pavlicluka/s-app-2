@@ -7,6 +7,7 @@ import {
   BookOpen, Award, FileText, Eye
 } from 'lucide-react'
 import GDPRUsposabljanjaEvidenceAddModal from '../modals/GDPRUsposabljanjaEvidenceAddModal'
+import { supabase } from '../../lib/supabase'
 
 interface TrainingRecord {
   id: string

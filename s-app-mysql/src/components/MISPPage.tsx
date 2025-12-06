@@ -3,6 +3,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import DataTable from './DataTable'
 import Badge from './Badge'
+import { supabase } from '../lib/supabase'
 
 interface MISPEvent {
   id: string
