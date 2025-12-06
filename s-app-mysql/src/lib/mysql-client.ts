@@ -37,6 +37,9 @@ async function postJSON<T>(path: string, body: any): Promise<{ data: T | null; e
 }
 
 export class MySQLAPI {
+  // Mock implementations that simulate database operations
+  // V realni implementaciji se to poveže z backend API-jem
+
   async query(sql: string, params: any[] = []) {
     return postJSON<any>('/mysql/query', { sql, params })
   }
@@ -73,6 +76,49 @@ export class MySQLAPI {
 
   async searchLike(table: string, columns: string[], searchTerm: string, options: any = {}) {
     return postJSON<any[]>('/mysql/search', { table, columns, searchTerm, options })
+  }
+}
+
+class QueryBuilder {
+  constructor(
+    private table: string,
+    private columns: string = '*',
+    private conditions: string = '',
+    private params: any[] = [],
+    private options: SelectOptions = {},
+  ) {}
+
+  order(column: string, { ascending = true }: { ascending?: boolean } = {}) {
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, {
+      ...this.options,
+      orderBy: column,
+      ascending,
+    })
+  }
+
+  eq(column: string, value: any) {
+    return new QueryBuilder(this.table, this.columns, `${column} = ?`, [value], this.options)
+  }
+
+  async single() {
+    const result = await this.execute()
+    return { ...result, data: Array.isArray(result.data) ? result.data[0] ?? null : null }
+  }
+
+  async maybeSingle() {
+    const result = await this.execute()
+    return { ...result, data: Array.isArray(result.data) ? result.data[0] ?? null : null }
+  }
+
+  execute() {
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, this.options)
+  }
+
+  then<TResult1 = any, TResult2 = never>(
+    onfulfilled?: ((value: { data: any; error: any }) => TResult1 | PromiseLike<TResult1>) | undefined | null,
+    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
+  ) {
+    return this.execute().then(onfulfilled, onrejected)
   }
 }
 
