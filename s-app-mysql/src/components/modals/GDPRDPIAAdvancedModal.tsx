@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useTranslation } from 'react-i18next'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRDPIAAdvancedModalProps {
   isOpen: boolean

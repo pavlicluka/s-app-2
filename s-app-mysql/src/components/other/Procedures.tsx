@@ -6,6 +6,7 @@ import ProceduresAddModal from '../modals/ProceduresAddModal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import CSVImportModal from '../common/CSVImportModal'
 import Modal from '../common/Modal'
+import { supabase } from '../../lib/supabase'
 
 export default function Procedures() {
   const { t } = useTranslation()

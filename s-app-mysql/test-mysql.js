@@ -109,7 +109,7 @@ async function testEnvironmentConfiguration() {
 
     console.log(`   ${status} ${varName}: ${maskedValue}`)
   })
-  
+
   return true
 }
 

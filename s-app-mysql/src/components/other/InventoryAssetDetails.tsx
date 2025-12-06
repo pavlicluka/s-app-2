@@ -4,6 +4,7 @@ import { Archive, Plus, Eye, X, Package, Calendar, Shield, Wrench, AlertTriangle
 import InventoryAssetDetailsAddModal from '../modals/InventoryAssetDetailsAddModal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import Modal from '../common/Modal'
+import { supabase } from '../../lib/supabase'
 
 export default function InventoryAssetDetails() {
   const [records, setRecords] = useState<any[]>([])

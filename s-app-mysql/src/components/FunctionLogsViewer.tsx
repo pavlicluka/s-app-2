@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../lib/mysql-client'
 import { Copy, Download, RefreshCw, X, ChevronDown, ChevronUp, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { supabase } from '../lib/supabase'
 
 interface FunctionLog {
   id: string

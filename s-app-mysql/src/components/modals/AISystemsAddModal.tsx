@@ -3,6 +3,7 @@ import { Bot } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useAuth } from '../../contexts/AuthContext'
 import { useTranslation } from 'react-i18next'
+import { supabase } from '../../lib/supabase'
 
 interface AISystemsAddModalProps {
   isOpen: boolean

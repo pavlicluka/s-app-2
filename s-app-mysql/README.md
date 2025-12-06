@@ -113,6 +113,30 @@ VITE_MYSQL_USER=u816302701_virtual
 VITE_MYSQL_PASSWORD=<your-password>
 ```
 
+### Lokalno preverjanje MySQL konfiguracije
+
+Za zagon preverjanja povezave uporabite priloženi skript `test-mysql.js`, ki uporablja isto implementacijo kot aplikacija (`mysql-client.js`).
+
+**Predpogoji:**
+- Node.js 20 LTS (priporočeno) in pnpm (ali npm). Če Node.js še ni nameščen, ga lahko dodate z nvm:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.nvm/nvm.sh
+nvm install 20
+```
+
+- Dostop do MySQL podatkovne baze iz vašega omrežja
+- Izpolnjene zgornje environment spremenljivke v `.env.local`
+
+**Zagon:**
+```bash
+cd s-app-mysql
+node test-mysql.js
+```
+
+Skript bo izpisal, ali uporablja vrednosti iz `.env` ali privzete vrednosti ter preveril osnovne poizvedbe nad tabelami `organizations`, `profiles`, `nis2_risk_register` in `supply_chain_suppliers`.
+
 ## 📊 MySQL baza podatkov
 
 ### Struktura tabel (34 tabel)
