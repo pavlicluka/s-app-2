@@ -115,18 +115,6 @@ VITE_MYSQL_PASSWORD=<your-password>
 VITE_MYSQL_API_URL=http://localhost:3001/api
 ```
 
-### MySQL API strežnik (Express)
-
-Frontend zdaj komunicira z MySQL preko lahkega Express strežnika, ki razstavi generične CRUD endpoint-e. Za lokalni razvoj zaženite strežnik pred `pnpm dev`:
-
-```bash
-cd server
-npm install
-npm start
-```
-
-Če uporabljate drug URL ali reverse proxy, posodobite `VITE_MYSQL_API_URL`.
-
 ### Lokalno preverjanje MySQL konfiguracije
 
 Za zagon preverjanja povezave uporabite priloženi skript `test-mysql.js`, ki uporablja isto implementacijo kot aplikacija (`mysql-client.js`).

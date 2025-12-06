@@ -8,6 +8,13 @@ type SelectOptions = {
   offset?: number
 }
 
+type SelectOptions = {
+  orderBy?: string
+  ascending?: boolean
+  limit?: number
+  offset?: number
+}
+
 // MySQL API wrapper - Browser compatible version
 const API_BASE_URL = import.meta.env.VITE_MYSQL_API_URL || '/api'
 
@@ -37,6 +44,9 @@ async function postJSON<T>(path: string, body: any): Promise<{ data: T | null; e
 }
 
 export class MySQLAPI {
+  // Mock implementations that simulate database operations
+  // V realni implementaciji se to poveže z backend API-jem
+
   async query(sql: string, params: any[] = []) {
     return postJSON<any>('/mysql/query', { sql, params })
   }
@@ -80,34 +90,21 @@ class QueryBuilder {
   constructor(
     private table: string,
     private columns: string = '*',
-    private filters: string[] = [],
+    private conditions: string = '',
     private params: any[] = [],
     private options: SelectOptions = {},
   ) {}
 
   order(column: string, { ascending = true }: { ascending?: boolean } = {}) {
-    return new QueryBuilder(this.table, this.columns, this.filters, this.params, {
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, {
       ...this.options,
       orderBy: column,
       ascending,
     })
   }
 
-  limit(count: number) {
-    return new QueryBuilder(this.table, this.columns, this.filters, this.params, {
-      ...this.options,
-      limit: count,
-    })
-  }
-
   eq(column: string, value: any) {
-    return new QueryBuilder(
-      this.table,
-      this.columns,
-      [...this.filters, `${column} = ?`],
-      [...this.params, value],
-      this.options,
-    )
+    return new QueryBuilder(this.table, this.columns, `${column} = ?`, [value], this.options)
   }
 
   async single() {
@@ -121,8 +118,7 @@ class QueryBuilder {
   }
 
   execute() {
-    const conditions = this.filters.join(' AND ')
-    return mysqlAPI.select(this.table, this.columns, conditions, this.params, this.options)
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, this.options)
   }
 
   then<TResult1 = any, TResult2 = never>(
@@ -133,71 +129,46 @@ class QueryBuilder {
   }
 }
 
-class InsertBuilder {
-  constructor(private table: string, private payload: any) {}
+class QueryBuilder {
+  constructor(
+    private table: string,
+    private columns: string = '*',
+    private conditions: string = '',
+    private params: any[] = [],
+    private options: SelectOptions = {},
+  ) {}
 
-  async select(columns = '*') {
-    const result = await mysqlAPI.insert(this.table, this.payload)
-    if (result.error) return result
-
-    // If the payload already contains an id we can return the inserted row
-    const insertedId = Array.isArray(this.payload) ? this.payload[0]?.id : this.payload?.id
-    if (!insertedId) return { data: result.data, error: null }
-
-    return mysqlAPI.select(this.table, columns, 'id = ?', [insertedId])
+  order(column: string, { ascending = true }: { ascending?: boolean } = {}) {
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, {
+      ...this.options,
+      orderBy: column,
+      ascending,
+    })
   }
-
-  then<TResult1 = any, TResult2 = never>(
-    onfulfilled?: ((value: { data: any; error: any }) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
-  ) {
-    return mysqlAPI.insert(this.table, this.payload).then(onfulfilled, onrejected)
-  }
-}
-
-class UpdateBuilder {
-  constructor(private table: string, private payload: any, private filters: string[] = [], private params: any[] = []) {}
 
   eq(column: string, value: any) {
-    return new UpdateBuilder(this.table, this.payload, [...this.filters, `${column} = ?`], [...this.params, value])
+    return new QueryBuilder(this.table, this.columns, `${column} = ?`, [value], this.options)
   }
 
-  async select(columns = '*') {
-    const conditions = this.filters.join(' AND ')
-    const updateResult = await mysqlAPI.update(this.table, this.payload, conditions, this.params)
-    if (updateResult.error) return updateResult
-
-    if (!conditions) return { data: updateResult.data, error: null }
-    return mysqlAPI.select(this.table, columns, conditions, this.params)
+  async single() {
+    const result = await this.execute()
+    return { ...result, data: Array.isArray(result.data) ? result.data[0] ?? null : null }
   }
 
-  then<TResult1 = any, TResult2 = never>(
-    onfulfilled?: ((value: { data: any; error: any }) => TResult1 | PromiseLike<TResult1>) | undefined | null,
-    onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
-  ) {
-    const conditions = this.filters.join(' AND ')
-    return mysqlAPI.update(this.table, this.payload, conditions, this.params).then(onfulfilled, onrejected)
-  }
-}
-
-class DeleteBuilder {
-  constructor(private table: string, private filters: string[] = [], private params: any[] = []) {}
-
-  eq(column: string, value: any) {
-    return new DeleteBuilder(this.table, [...this.filters, `${column} = ?`], [...this.params, value])
+  async maybeSingle() {
+    const result = await this.execute()
+    return { ...result, data: Array.isArray(result.data) ? result.data[0] ?? null : null }
   }
 
-  select(columns = '*') {
-    const conditions = this.filters.join(' AND ')
-    return mysqlAPI.select(this.table, columns, conditions, this.params)
+  execute() {
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, this.options)
   }
 
   then<TResult1 = any, TResult2 = never>(
     onfulfilled?: ((value: { data: any; error: any }) => TResult1 | PromiseLike<TResult1>) | undefined | null,
     onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null,
   ) {
-    const conditions = this.filters.join(' AND ')
-    return mysqlAPI.delete(this.table, conditions, this.params).then(onfulfilled, onrejected)
+    return this.execute().then(onfulfilled, onrejected)
   }
 }
 
@@ -247,9 +218,13 @@ const storage = createInMemoryStorage()
 export const mysqlClient = {
   from: (table: string) => ({
     select: (columns = '*') => new QueryBuilder(table, columns),
-    insert: (data: any) => new InsertBuilder(table, data),
-    update: (data: any) => new UpdateBuilder(table, data),
-    delete: () => new DeleteBuilder(table),
+    insert: (data: any) => mysqlAPI.insert(table, data),
+    update: (data: any) => ({
+      eq: (column: string, value: any) => mysqlAPI.update(table, data, `${column} = ?`, [value]),
+    }),
+    delete: () => ({
+      eq: (column: string, value: any) => mysqlAPI.delete(table, `${column} = ?`, [value]),
+    }),
   }),
   auth: {
     getSession: () => Promise.resolve({ data: { session: null }, error: null }),
@@ -259,10 +234,9 @@ export const mysqlClient = {
     signUp: () => Promise.resolve({ data: { user: null }, error: null }),
     signOut: () => Promise.resolve({ error: null }),
   },
-  storage,
   functions: {
     invoke: (_name: string, _options: any = {}) =>
-      Promise.resolve({ data: null, error: 'Edge functions are disabled in MySQL-only mode' }),
+      Promise.resolve({ data: null, error: 'Supabase edge functions are not available in MySQL mode' }),
   },
 }
 
