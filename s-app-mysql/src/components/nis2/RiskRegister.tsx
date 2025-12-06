@@ -6,6 +6,7 @@ import NIS2RiskRegisterAddModal from '../modals/NIS2RiskRegisterAddModal'
 import Modal from '../common/Modal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import jsPDF from 'jspdf'
+import { supabase } from '../../lib/supabase'
 
 interface RiskRegisterRecord {
   id: string

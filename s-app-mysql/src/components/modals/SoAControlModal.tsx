@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { X, Save, AlertCircle } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
+import { supabase } from '../../lib/supabase'
 
 interface SoAControl {
   id: string

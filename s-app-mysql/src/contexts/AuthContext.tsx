@@ -60,45 +60,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Funkcija za hashiranje gesla (browser compatible)
-  const hashPassword = async (password: string): Promise<string> => {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(password + 'standario-salt-2025')
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  }
-
   const signIn = async (email: string, password: string) => {
-    console.log('🔐 AuthContext: MySQL signIn - poskušam se prijaviti', email)
+    const normalizedEmail = email.trim().toLowerCase()
+    console.log('🔐 AuthContext: MySQL signIn - poskušam se prijaviti', normalizedEmail)
     setLoading(true)
 
     try {
-      // MySQL avtentikacija - poišči uporabnika v bazi
-      const { data: profiles, error } = await mysqlAPI.select('profiles', '*', 'email = ?', [email])
-      
-      if (error) {
-        throw new Error('Napaka pri povezavi z bazo podatkov')
+      const { data: profile, error } = await mysqlAPI.login(normalizedEmail, password)
+
+      if (error || !profile) {
+        throw new Error(error || 'Neveljavni prijavni podatki')
       }
-      
-      if (!profiles || profiles.length === 0) {
-        throw new Error('Uporabnik s tem e-poštnim naslovom ne obstaja')
-      }
-      
-      const profile = profiles[0]
-      
-      // Preveri ali uporabnik ima password_hash
-      if (!profile.password_hash) {
-        throw new Error('Uporabnik nima nastavljenega gesla')
-      }
-      
-      // Hashiraj vnešeno geslo in ga primerjaj
-      const hashedPassword = await hashPassword(password)
-      
-      if (hashedPassword !== profile.password_hash) {
-        throw new Error('Neveljavno geslo')
-      }
-      
+
       console.log('✅ AuthContext: MySQL signIn - uporabnik uspešno prijavljen', profile.email)
       
       // Ustvari User objekt za avtentikacijo
@@ -134,12 +107,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }
 
   const signUp = async (email: string, password: string, fullName: string) => {
-    console.log('📝 AuthContext: MySQL signUp - ustvarjam nov račun', email)
+    const normalizedEmail = email.trim().toLowerCase()
+    console.log('📝 AuthContext: MySQL signUp - ustvarjam nov račun', normalizedEmail)
     setLoading(true)
 
     try {
       // Preveri, če uporabnik že obstaja
-      const { data: existingProfiles } = await mysqlAPI.select('profiles', '*', 'email = ?', [email])
+      const { data: existingProfiles } = await mysqlAPI.select('profiles', '*', 'email = ?', [normalizedEmail])
       
       if (existingProfiles && existingProfiles.length > 0) {
         throw new Error('Uporabnik s tem e-poštnim naslovom že obstaja')
@@ -149,10 +123,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const newProfile = {
         id: crypto.randomUUID(),
         user_id: crypto.randomUUID(),
-        email: email,
+        email: normalizedEmail,
         full_name: fullName,
         role: 'user',
         is_active: true,
+        password_hash: await MySQLAuth.hashPassword(password),
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       }

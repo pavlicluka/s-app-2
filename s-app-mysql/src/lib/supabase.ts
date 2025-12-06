@@ -8,8 +8,9 @@
  * Migration Status: Complete
  */
 
-// Re-export MySQL supabase client for backward compatibility
-export { supabase, mysqlAPI } from './mysql-client'
+// Re-export the MySQL client under both names for backward compatibility
+// NOTE: There is no Supabase backend anymore; both exports point to the MySQL-only client
+export { mysqlClient, supabase, mysqlAPI } from './mysql-client'
 
 // Validation function
 export function validateSupabaseConfig() {

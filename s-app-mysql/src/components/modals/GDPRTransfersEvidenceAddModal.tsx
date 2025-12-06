@@ -4,6 +4,7 @@ import { X, Save, AlertCircle } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useOrganization } from '../../hooks/useOrganization'
 import { toast } from 'sonner'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRTransfersEvidenceAddModalProps {
   isOpen: boolean

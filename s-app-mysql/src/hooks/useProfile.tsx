@@ -1,6 +1,7 @@
 import { useState, useEffect, createContext, useContext } from 'react'
 import { useAuth } from '../contexts/AuthContext'
 import { mysqlAPI } from '../lib/mysql-client'
+import { supabase } from '../lib/supabase'
 
 export interface Profile {
   id: string

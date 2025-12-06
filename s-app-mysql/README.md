@@ -75,7 +75,7 @@ pnpm install
 
 # Nastavi environment variables
 cp .env.example .env.local
-# Uredi .env.local z MySQL podatki
+# Uredi .env.local z MySQL podatki in API endpointom
 
 # Poženi development server
 pnpm dev
@@ -101,7 +101,7 @@ pnpm preview
 Host: 195.35.53.6
 Port: 3306
 Database: u816302701_standario2025
-Username: u816302701
+Username: u816302701_virtual
 ```
 
 **Environment variables:**
@@ -109,9 +109,53 @@ Username: u816302701
 VITE_MYSQL_HOST=195.35.53.6
 VITE_MYSQL_PORT=3306
 VITE_MYSQL_DATABASE=u816302701_standario2025
-VITE_MYSQL_USERNAME=u816302701
+VITE_MYSQL_USER=u816302701_virtual
 VITE_MYSQL_PASSWORD=<your-password>
+# URL do MySQL API strežnika (privzeto pričakuje reverse proxy na /api)
+VITE_MYSQL_API_URL=http://localhost:3001/api
 ```
+
+**Privzeti administrativni dostop (MySQL-only):**
+- Email: `admin@standario.com`
+- Geslo: `gesloteslo`
+- Ob zagonu Express strežnika (`server/api-profiles.js`) se uporabnik samodejno ustvari oziroma posodobi z zgornjim geslom in vlogo `super_admin`.
+- Za ročno preverjanje ali posodobitev lahko uporabite skripti `node create-admin-user.mjs` ali `node update_passwords.mjs`.
+
+### MySQL API strežnik (Express)
+
+Frontend zdaj komunicira z MySQL preko lahkega Express strežnika, ki razstavi generične CRUD endpoint-e in namenski `/api/auth/login` za preverjanje gesla na strežniku. Za lokalni razvoj zaženite strežnik pred `pnpm dev`:
+
+```bash
+cd server
+npm install
+npm start
+```
+
+Če uporabljate drug URL ali reverse proxy, posodobite `VITE_MYSQL_API_URL`.
+
+### Lokalno preverjanje MySQL konfiguracije
+
+Za zagon preverjanja povezave uporabite priloženi skript `test-mysql.js`, ki uporablja isto implementacijo kot aplikacija (`mysql-client.js`).
+
+**Predpogoji:**
+- Node.js 20 LTS (priporočeno) in pnpm (ali npm). Če Node.js še ni nameščen, ga lahko dodate z nvm:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+source ~/.nvm/nvm.sh
+nvm install 20
+```
+
+- Dostop do MySQL podatkovne baze iz vašega omrežja
+- Izpolnjene zgornje environment spremenljivke v `.env.local`
+
+**Zagon:**
+```bash
+cd s-app-mysql
+node test-mysql.js
+```
+
+Skript bo izpisal, ali uporablja vrednosti iz `.env` ali privzete vrednosti ter preveril osnovne poizvedbe nad tabelami `organizations`, `profiles`, `nis2_risk_register` in `supply_chain_suppliers`.
 
 ## 📊 MySQL baza podatkov
 

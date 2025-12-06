@@ -1,4 +1,5 @@
 import mysql from 'mysql2/promise';
+import crypto from 'crypto';
 
 const config = {
   host: '195.35.53.6',
@@ -7,6 +8,17 @@ const config = {
   password: 'Vir007tu@l!',
   database: 'u816302701_standario2025'
 };
+
+const PASSWORD_SALT = 'standario-salt-2025';
+const ADMIN_PASSWORD = 'gesloteslo';
+const DEMO_PASSWORD = 'Demo2025!';
+
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password + PASSWORD_SALT).digest('hex');
+}
+
+const ADMIN_PASSWORD_HASH = hashPassword(ADMIN_PASSWORD);
+const DEMO_PASSWORD_HASH = hashPassword(DEMO_PASSWORD);
 
 async function updatePasswords() {
   let connection;
@@ -19,7 +31,7 @@ async function updatePasswords() {
     console.log('\nPosodabljam admin@standario.com geslo...');
     const [adminResult] = await connection.execute(
       'UPDATE profiles SET password_hash = ? WHERE email = ?',
-      ['a6286dbfc32619dd328c47d1fd343ef8fc0fb0e1001ea844647e24c7a8cd3469', 'admin@standario.com']
+      [ADMIN_PASSWORD_HASH, 'admin@standario.com']
     );
     console.log(`Posodobljenih admin: ${adminResult.affectedRows}`);
 
@@ -27,7 +39,7 @@ async function updatePasswords() {
     console.log('\nPosodabljam demo@standario.com geslo...');
     const [demoResult] = await connection.execute(
       'UPDATE profiles SET password_hash = ? WHERE email = ?',
-      ['a6286dbfc32619dd328c47d1fd343ef8fc0fb0e1001ea844647e24c7a8cd3469', 'demo@standario.com']
+      [DEMO_PASSWORD_HASH, 'demo@standario.com']
     );
     console.log(`Posodobljenih demo: ${demoResult.affectedRows}`);
 
@@ -47,7 +59,7 @@ async function updatePasswords() {
     });
 
     console.log('\n✅ Gesla uspešno posodobljena!');
-    
+
   } catch (error) {
     console.error('❌ Napaka:', error.message);
   } finally {
