@@ -60,15 +60,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [])
 
-  // Funkcija za hashiranje gesla (browser compatible)
-  const hashPassword = async (password: string): Promise<string> => {
-    const encoder = new TextEncoder()
-    const data = encoder.encode(password + 'standario-salt-2025')
-    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
-  }
-
   const signIn = async (email: string, password: string) => {
     const normalizedEmail = email.trim().toLowerCase()
     console.log('🔐 AuthContext: MySQL signIn - poskušam se prijaviti', normalizedEmail)
@@ -106,7 +97,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!profile.password_hash) {
         await mysqlAPI.update('profiles', { password_hash: hashedPassword }, 'id = ?', [profile.id || profile.user_id])
       }
-      
+
       console.log('✅ AuthContext: MySQL signIn - uporabnik uspešno prijavljen', profile.email)
       
       // Ustvari User objekt za avtentikacijo
