@@ -223,11 +223,13 @@ export const mysqlClient = {
     signUp: () => Promise.resolve({ data: { user: null }, error: null }),
     signOut: () => Promise.resolve({ error: null }),
   },
+  storage,
   functions: {
     invoke: (_name, _options = {}) =>
-      Promise.resolve({ data: null, error: 'Supabase edge functions are not available in MySQL mode' }),
+      Promise.resolve({ data: null, error: 'Edge functions are not available in MySQL mode' }),
   },
 }
 
-// Export MySQL API as default for backward compatibility
-export default supabase
+// Backward-compatible default export and alias
+export const supabase = mysqlClient
+export default mysqlClient

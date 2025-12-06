@@ -115,6 +115,24 @@ VITE_MYSQL_PASSWORD=<your-password>
 VITE_MYSQL_API_URL=http://localhost:3001/api
 ```
 
+**Privzeti administrativni dostop (MySQL-only):**
+- Email: `admin@standario.com`
+- Geslo: `gesloteslo`
+- Ob zagonu Express strežnika (`server/api-profiles.js`) se uporabnik samodejno ustvari oziroma posodobi z zgornjim geslom in vlogo `super_admin`.
+- Za ročno preverjanje ali posodobitev lahko uporabite skripti `node create-admin-user.mjs` ali `node update_passwords.mjs`.
+
+### MySQL API strežnik (Express)
+
+Frontend zdaj komunicira z MySQL preko lahkega Express strežnika, ki razstavi generične CRUD endpoint-e. Za lokalni razvoj zaženite strežnik pred `pnpm dev`:
+
+```bash
+cd server
+npm install
+npm start
+```
+
+Če uporabljate drug URL ali reverse proxy, posodobite `VITE_MYSQL_API_URL`.
+
 ### Lokalno preverjanje MySQL konfiguracije
 
 Za zagon preverjanja povezave uporabite priloženi skript `test-mysql.js`, ki uporablja isto implementacijo kot aplikacija (`mysql-client.js`).

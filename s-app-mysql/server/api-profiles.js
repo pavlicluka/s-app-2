@@ -10,6 +10,9 @@ import crypto from 'crypto';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const PASSWORD_SALT = 'standario-salt-2025';
+const DEFAULT_ADMIN_EMAIL = (process.env.DEFAULT_ADMIN_EMAIL || 'admin@standario.com').toLowerCase();
+const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'gesloteslo';
 
 // Middleware
 app.use(cors());
@@ -29,6 +32,10 @@ const dbConfig = {
 
 // Create connection pool
 const pool = mysql.createPool(dbConfig);
+
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password + PASSWORD_SALT).digest('hex');
+}
 
 // Shared query helper
 async function runQuery(sql, params = []) {
@@ -76,6 +83,39 @@ async function testConnection() {
   } catch (error) {
     console.error('❌ MySQL napaka:', error.message);
   }
+}
+
+async function ensureDefaultAdmin() {
+  const email = DEFAULT_ADMIN_EMAIL.trim().toLowerCase();
+  const passwordHash = hashPassword(DEFAULT_ADMIN_PASSWORD);
+
+  const [existing] = await pool.execute(
+    'SELECT id FROM profiles WHERE email = ? LIMIT 1',
+    [email]
+  );
+
+  if (!Array.isArray(existing) || existing.length === 0) {
+    const id = crypto.randomUUID();
+    const userId = id;
+
+    await pool.execute(
+      `INSERT INTO profiles (id, user_id, email, full_name, role, is_active, password_hash, created_at, updated_at)
+       VALUES (?, ?, ?, ?, 'super_admin', 1, ?, NOW(), NOW())`,
+      [id, userId, email, 'Administrator', passwordHash]
+    );
+
+    console.log(`✅ Ustvarjen privzeti admin (${email})`);
+    return;
+  }
+
+  await pool.execute(
+    `UPDATE profiles
+       SET password_hash = ?, role = 'super_admin', is_active = 1, updated_at = NOW()
+       WHERE email = ?`,
+    [passwordHash, email]
+  );
+
+  console.log(`ℹ️ Privzeti admin posodobljen (${email})`);
 }
 
 // Generic MySQL endpoints used by the frontend compatibility layer
@@ -366,6 +406,11 @@ app.get('/health', async (req, res) => {
 app.listen(PORT, async () => {
   console.log(`🚀 MySQL API Server running on port ${PORT}`);
   await testConnection();
+  try {
+    await ensureDefaultAdmin();
+  } catch (error) {
+    console.error('❌ Napaka pri ustvarjanju privzetega admin uporabnika:', error.message);
+  }
 });
 
 export default app;
