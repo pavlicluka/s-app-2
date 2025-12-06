@@ -75,7 +75,7 @@ pnpm install
 
 # Nastavi environment variables
 cp .env.example .env.local
-# Uredi .env.local z MySQL podatki
+# Uredi .env.local z MySQL podatki in API endpointom
 
 # Poženi development server
 pnpm dev
@@ -111,6 +111,8 @@ VITE_MYSQL_PORT=3306
 VITE_MYSQL_DATABASE=u816302701_standario2025
 VITE_MYSQL_USER=u816302701_virtual
 VITE_MYSQL_PASSWORD=<your-password>
+# URL do MySQL API strežnika (privzeto pričakuje reverse proxy na /api)
+VITE_MYSQL_API_URL=http://localhost:3001/api
 ```
 
 ### Lokalno preverjanje MySQL konfiguracije
