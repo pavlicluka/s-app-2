@@ -5,6 +5,7 @@ import { Key, Plus, Eye, X, Edit, Trash2, Download, AlertTriangle, Copy, Check }
 import InventoryLicensesAddModal from '../modals/InventoryLicensesAddModal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import Modal from '../common/Modal'
+import { supabase } from '../../lib/supabase'
 
 export default function InventoryLicenses() {
   const { t } = useTranslation()

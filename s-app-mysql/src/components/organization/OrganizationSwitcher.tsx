@@ -4,6 +4,7 @@ import { ChevronDown, Building2, UserPlus } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useOrganization } from '../../hooks/useOrganization'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 
 interface OrganizationSwitcherProps {
   onInviteUser?: () => void

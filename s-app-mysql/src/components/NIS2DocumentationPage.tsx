@@ -5,6 +5,7 @@ import { mysqlAPI } from '../lib/mysql-client'
 import DataTable from './DataTable'
 import NIS2DocumentationModal from './modals/NIS2DocumentationModal'
 import Badge from './Badge'
+import { supabase } from '../lib/supabase'
 
 // MySQL tipi definicije
 interface NIS2Documentation {

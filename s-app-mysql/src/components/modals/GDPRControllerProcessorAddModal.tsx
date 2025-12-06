@@ -3,6 +3,7 @@ import { X, Users, Upload } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRControllerProcessorAddModalProps {
   isOpen: boolean

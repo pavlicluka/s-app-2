@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useAuth } from '../../contexts/AuthContext'
 import i18n from '../../i18n'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRProcessingActivitiesRecordAddModalProps {
   isOpen: boolean
