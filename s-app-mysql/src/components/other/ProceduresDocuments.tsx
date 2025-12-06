@@ -5,6 +5,7 @@ import ProceduresDocumentsAddModal from '../modals/ProceduresDocumentsAddModal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import CSVImportModal from '../common/CSVImportModal'
 import Modal from '../common/Modal'
+import { supabase } from '../../lib/supabase'
 
 export default function ProceduresDocuments() {
   const [records, setRecords] = useState<any[]>([])

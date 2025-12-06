@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X, ChevronLeft, ChevronRight, FileText, CheckCircle, AlertCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../../lib/mysql-client'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRRightForgottenAddModalProps {
   isOpen: boolean

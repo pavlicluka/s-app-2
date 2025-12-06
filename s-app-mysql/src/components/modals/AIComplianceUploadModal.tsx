@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Upload, FileText, X, CheckCircle, AlertCircle } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 
 interface AIComplianceUploadModalProps {
   isOpen: boolean

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { Lock, X } from 'lucide-react'
 import { logAuditAction, AuditActionTypes } from '../../lib/auditLog'
+import { supabase } from '../../lib/supabase'
 
 interface ChangePasswordModalProps {
   onClose: () => void

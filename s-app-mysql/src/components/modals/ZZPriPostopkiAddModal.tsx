@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { X, Calendar, FileText, AlertCircle } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
+import { supabase } from '../../lib/supabase'
 
 interface ZZPriPostopkiAddModalProps {
   isOpen: boolean

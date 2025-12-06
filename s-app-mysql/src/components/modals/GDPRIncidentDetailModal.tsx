@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X, Edit, Download, FileText, Mail, Calendar, Users, Shield, AlertTriangle, CheckCircle, Clock, ExternalLink } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../../lib/mysql-client'
+import { supabase } from '../../lib/supabase'
 
 interface GDPRIncidentDetailModalProps {
   isOpen: boolean

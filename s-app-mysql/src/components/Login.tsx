@@ -12,7 +12,7 @@ export default function Login() {
   const [fullName, setFullName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
-  const [isSignUp, setIsSignUp] = useState(true) // Changed to true to force signup mode
+  const [isSignUp, setIsSignUp] = useState(false)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()

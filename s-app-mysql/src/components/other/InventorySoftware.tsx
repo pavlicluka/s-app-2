@@ -5,6 +5,7 @@ import { Package, Plus, Eye, X, Edit, Trash2, Download, AlertTriangle } from 'lu
 import InventorySoftwareAddModal from '../modals/InventorySoftwareAddModal'
 import DeleteConfirmModal from '../common/DeleteConfirmModal'
 import Modal from '../common/Modal'
+import { supabase } from '../../lib/supabase'
 
 export default function InventorySoftware() {
   const { t } = useTranslation()
