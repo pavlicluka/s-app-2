@@ -88,16 +88,23 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       const profile = profiles[0]
       
-      // Preveri ali uporabnik ima password_hash
-      if (!profile.password_hash) {
-        throw new Error('Uporabnik nima nastavljenega gesla')
-      }
-      
       // Hashiraj vnešeno geslo in ga primerjaj
       const hashedPassword = await hashPassword(password)
-      
-      if (hashedPassword !== profile.password_hash) {
-        throw new Error('Neveljavno geslo')
+
+      const legacyPassword = profile.password || profile.raw_password || profile.passwordHash
+      const storedHash = profile.password_hash || legacyPassword
+
+      const passwordMatches =
+        (typeof storedHash === 'string' && (storedHash === hashedPassword || storedHash === password)) ||
+        (typeof legacyPassword === 'string' && (legacyPassword === password || legacyPassword === hashedPassword))
+
+      if (!passwordMatches) {
+        throw new Error('Neveljavni prijavni podatki')
+      }
+
+      // Če je geslo shranjeno kot plain/legacy, ga posodobi na hashirano različico
+      if (!profile.password_hash) {
+        await mysqlAPI.update('profiles', { password_hash: hashedPassword }, 'id = ?', [profile.id || profile.user_id])
       }
       
       console.log('✅ AuthContext: MySQL signIn - uporabnik uspešno prijavljen', profile.email)
