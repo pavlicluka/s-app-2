@@ -123,7 +123,7 @@ VITE_MYSQL_API_URL=http://localhost:3001/api
 
 ### MySQL API strežnik (Express)
 
-Frontend zdaj komunicira z MySQL preko lahkega Express strežnika, ki razstavi generične CRUD endpoint-e in namenski `/api/auth/login` za preverjanje gesla na strežniku. Za lokalni razvoj zaženite strežnik pred `pnpm dev`:
+Frontend zdaj komunicira z MySQL preko lahkega Express strežnika, ki razstavi generične CRUD endpoint-e. Za lokalni razvoj zaženite strežnik pred `pnpm dev`:
 
 ```bash
 cd server

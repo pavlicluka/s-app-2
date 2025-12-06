@@ -37,10 +37,6 @@ async function postJSON<T>(path: string, body: any): Promise<{ data: T | null; e
 }
 
 export class MySQLAPI {
-  async login(email: string, password: string) {
-    return postJSON<any>('/auth/login', { email, password })
-  }
-
   async query(sql: string, params: any[] = []) {
     return postJSON<any>('/mysql/query', { sql, params })
   }

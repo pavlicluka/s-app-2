@@ -11,7 +11,6 @@ import crypto from 'crypto';
 const app = express();
 const PORT = process.env.PORT || 3001;
 const PASSWORD_SALT = 'standario-salt-2025';
-const LEGACY_PASSWORD_FIELDS = ['password_hash', 'password', 'raw_password', 'passwordHash'];
 const DEFAULT_ADMIN_EMAIL = (process.env.DEFAULT_ADMIN_EMAIL || 'admin@standario.com').toLowerCase();
 const DEFAULT_ADMIN_PASSWORD = process.env.DEFAULT_ADMIN_PASSWORD || 'gesloteslo';
 
@@ -36,17 +35,6 @@ const pool = mysql.createPool(dbConfig);
 
 function hashPassword(password) {
   return crypto.createHash('sha256').update(password + PASSWORD_SALT).digest('hex');
-}
-
-function normalizeEmail(email = '') {
-  return String(email).trim().toLowerCase();
-}
-
-function extractStoredPassword(profile = {}) {
-  for (const field of LEGACY_PASSWORD_FIELDS) {
-    if (profile[field]) return profile[field];
-  }
-  return null;
 }
 
 // Shared query helper
@@ -98,7 +86,7 @@ async function testConnection() {
 }
 
 async function ensureDefaultAdmin() {
-  const email = normalizeEmail(DEFAULT_ADMIN_EMAIL);
+  const email = DEFAULT_ADMIN_EMAIL.trim().toLowerCase();
   const passwordHash = hashPassword(DEFAULT_ADMIN_PASSWORD);
 
   const [existing] = await pool.execute(
@@ -131,57 +119,6 @@ async function ensureDefaultAdmin() {
 }
 
 // Generic MySQL endpoints used by the frontend compatibility layer
-app.post('/api/auth/login', async (req, res) => {
-  const { email, password } = req.body || {};
-
-  if (!email || !password) {
-    return res.status(400).json({ success: false, error: 'Email in geslo sta obvezna' });
-  }
-
-  const normalizedEmail = normalizeEmail(email);
-  const hashedPassword = hashPassword(password);
-
-  try {
-    const [rows] = await pool.execute('SELECT * FROM profiles WHERE email = ? LIMIT 1', [normalizedEmail]);
-    const profile = Array.isArray(rows) ? rows[0] : null;
-
-    if (!profile) {
-      return res.status(401).json({ success: false, error: 'Neveljavni prijavni podatki' });
-    }
-
-    const stored = extractStoredPassword(profile);
-    const passwordMatches =
-      (typeof stored === 'string' && (stored === hashedPassword || stored === password)) ||
-      false;
-
-    if (!passwordMatches) {
-      return res.status(401).json({ success: false, error: 'Neveljavni prijavni podatki' });
-    }
-
-    // If the stored password was legacy/plaintext, upgrade it to the salted hash
-    if (!profile.password_hash || profile.password_hash === password) {
-      await pool.execute('UPDATE profiles SET password_hash = ?, updated_at = NOW() WHERE id = ?', [hashedPassword, profile.id]);
-      profile.password_hash = hashedPassword;
-    }
-
-    const safeProfile = {
-      id: profile.id,
-      user_id: profile.user_id,
-      email: profile.email,
-      full_name: profile.full_name,
-      avatar_url: profile.avatar_url,
-      organization_id: profile.organization_id,
-      role: profile.role || 'user',
-      is_active: profile.is_active,
-    };
-
-    return res.json({ success: true, data: safeProfile });
-  } catch (error) {
-    console.error('❌ Auth login napaka:', error);
-    return res.status(500).json({ success: false, error: 'Napaka pri preverjanju prijave' });
-  }
-});
-
 app.post('/api/mysql/select', async (req, res) => {
   const { table, columns = '*', conditions = '', params = [], options = {} } = req.body || {};
 
