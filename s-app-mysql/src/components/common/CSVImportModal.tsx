@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X, Upload, FileSpreadsheet, AlertCircle, CheckCircle } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { mysqlAPI } from '../../lib/mysql-client'
+import { supabase } from '../../lib/supabase'
 
 interface CSVImportModalProps {
   isOpen: boolean

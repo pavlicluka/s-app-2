@@ -4,7 +4,7 @@
  * Preveri osnovne funkcionalnosti MySQL povezave
  */
 
-import { MySQLAPI } from './src/lib/mysql-client.ts'
+import { getResolvedMySQLConfig, mysqlAPI } from './mysql-client.js'
 
 console.log('🧪 ZAČENJAM MySQL TEST STANDARIO APLIKACIJE')
 console.log('=' .repeat(50))
@@ -91,25 +91,26 @@ async function testDataIntegrity() {
 
 async function testEnvironmentConfiguration() {
   console.log('\n4️⃣ TESTIRA OKOLJSKO KONFIGURACIJO...')
-  
-  // Preveri environment spremenljivke
-  const envVars = [
-    'VITE_MYSQL_HOST',
-    'VITE_MYSQL_PORT', 
-    'VITE_MYSQL_DATABASE',
-    'VITE_MYSQL_USER'
+
+  const config = getResolvedMySQLConfig()
+  const envMapping = [
+    ['VITE_MYSQL_HOST', 'host'],
+    ['VITE_MYSQL_PORT', 'port'],
+    ['VITE_MYSQL_DATABASE', 'database'],
+    ['VITE_MYSQL_USER', 'user'],
+    ['VITE_MYSQL_PASSWORD', 'password']
   ]
-  
-  console.log('🔧 Environment spremenljivke:')
-  envVars.forEach(varName => {
-    const value = import.meta.env[varName]
-    if (value) {
-      console.log(`   ✅ ${varName}: ${varName.includes('PASSWORD') ? '***' : value}`)
-    } else {
-      console.log(`   ⚠️  ${varName}: ni nastavljeno (uporablja se fallback)`)
-    }
+
+  console.log('🔧 Environment spremenljivke (v uporabi):')
+  envMapping.forEach(([envName, key]) => {
+    const fromEnv = Boolean(process.env[envName])
+    const value = config[key]
+    const maskedValue = envName.includes('PASSWORD') ? '***' : value
+    const status = fromEnv ? '✅ iz environment-a' : 'ℹ️ privzeta vrednost'
+
+    console.log(`   ${status} ${envName}: ${maskedValue}`)
   })
-  
+
   return true
 }
 
