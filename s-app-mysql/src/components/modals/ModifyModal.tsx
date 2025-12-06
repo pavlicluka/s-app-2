@@ -5,6 +5,7 @@ import { mysqlAPI } from '../../lib/mysql-client'
 import { useAuth } from '../../contexts/AuthContext'
 import { Download } from 'lucide-react'
 import jsPDF from 'jspdf'
+import { supabase } from '../../lib/supabase'
 
 interface ModifyModalProps {
   isOpen: boolean

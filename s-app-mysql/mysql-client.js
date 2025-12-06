@@ -9,6 +9,17 @@ const mysqlConfig = {
   password: process.env.VITE_MYSQL_PASSWORD || 'Vir007tu@l!'
 }
 
+// Vrne trenutno uporabljeno konfiguracijo (z možnostjo maskiranja gesla)
+export function getResolvedMySQLConfig({ maskPassword = false } = {}) {
+  return {
+    host: mysqlConfig.host,
+    port: mysqlConfig.port,
+    database: mysqlConfig.database,
+    user: mysqlConfig.user,
+    password: maskPassword ? '***' : mysqlConfig.password,
+  }
+}
+
 // MySQL connection pool
 let pool = null
 
@@ -47,12 +58,29 @@ class MySQLAPI {
   }
 
   // Select
-  async select(table, columns = '*', conditions = '', params = []) {
+  async select(table, columns = '*', conditions = '', params = [], options = {}) {
     let sql = `SELECT ${columns} FROM ${table}`
+    const queryParams = [...params]
+
     if (conditions) {
       sql += ` WHERE ${conditions}`
     }
-    return this.query(sql, params)
+
+    if (options.orderBy) {
+      sql += ` ORDER BY ${options.orderBy} ${options.ascending === false ? 'DESC' : 'ASC'}`
+    }
+
+    if (options.limit) {
+      sql += ' LIMIT ?'
+      queryParams.push(options.limit)
+    }
+
+    if (options.offset) {
+      sql += ' OFFSET ?'
+      queryParams.push(options.offset)
+    }
+
+    return this.query(sql, queryParams)
   }
 
   // Insert
@@ -60,7 +88,7 @@ class MySQLAPI {
     const columns = Object.keys(data)
     const placeholders = columns.map(() => '?').join(', ')
     const values = columns.map(col => data[col])
-    
+
     const sql = `INSERT INTO ${table} (${columns.join(', ')}) VALUES (${placeholders})`
     return this.query(sql, values)
   }
@@ -69,7 +97,7 @@ class MySQLAPI {
   async update(table, data, conditions = '', params = []) {
     const setClause = Object.keys(data).map(col => `${col} = ?`).join(', ')
     const values = [...Object.values(data), ...params]
-    
+
     let sql = `UPDATE ${table} SET ${setClause}`
     if (conditions) {
       sql += ` WHERE ${conditions}`
@@ -98,41 +126,73 @@ class MySQLAPI {
   }
 }
 
+class QueryBuilder {
+  constructor(table, columns = '*', conditions = '', params = [], options = {}) {
+    this.table = table
+    this.columns = columns
+    this.conditions = conditions
+    this.params = params
+    this.options = options
+  }
+
+  order(column, { ascending = true } = {}) {
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, {
+      ...this.options,
+      orderBy: column,
+      ascending,
+    })
+  }
+
+  eq(column, value) {
+    return new QueryBuilder(this.table, this.columns, `${column} = ?`, [value], this.options)
+  }
+
+  async single() {
+    const result = await this.execute()
+    return { ...result, data: Array.isArray(result.data) ? result.data[0] ?? null : null }
+  }
+
+  async maybeSingle() {
+    const result = await this.execute()
+    return { ...result, data: Array.isArray(result.data) ? result.data[0] ?? null : null }
+  }
+
+  execute() {
+    return mysqlAPI.select(this.table, this.columns, this.conditions, this.params, this.options)
+  }
+
+  then(onfulfilled, onrejected) {
+    return this.execute().then(onfulfilled, onrejected)
+  }
+}
+
 // Default MySQL API instance
 export const mysqlAPI = new MySQLAPI()
 
 // Legacy Supabase compatibility interface
 export const supabase = {
   from: (table) => ({
-    select: (columns = '*') => ({
-      eq: (column, value) => ({
-        single: async () => mysqlAPI.select(table, columns, `${column} = ?`, [value]),
-        execute: async () => mysqlAPI.select(table, columns, `${column} = ?`, [value])
-      }),
-      order: (column, { ascending = true } = {}) => ({
-        execute: async () => mysqlAPI.select(table, columns, '', [])
-      })
-    }),
-    insert: (data) => ({
-      execute: async () => mysqlAPI.insert(table, data)
-    }),
+    select: (columns = '*') => new QueryBuilder(table, columns),
+    insert: (data) => mysqlAPI.insert(table, data),
     update: (data) => ({
-      eq: (column, value) => ({
-        execute: async () => mysqlAPI.update(table, data, `${column} = ?`, [value])
-      })
+      eq: (column, value) => mysqlAPI.update(table, data, `${column} = ?`, [value]),
     }),
     delete: () => ({
-      eq: (column, value) => ({
-        execute: async () => mysqlAPI.delete(table, `${column} = ?`, [value])
-      })
-    })
+      eq: (column, value) => mysqlAPI.delete(table, `${column} = ?`, [value]),
+    }),
   }),
   auth: {
     getSession: () => Promise.resolve({ data: { session: null }, error: null }),
+    getUser: () => Promise.resolve({ data: { user: null }, error: null }),
+    updateUser: () => Promise.resolve({ data: { user: null }, error: null }),
     signInWithPassword: () => Promise.resolve({ data: { user: null }, error: null }),
     signUp: () => Promise.resolve({ data: { user: null }, error: null }),
     signOut: () => Promise.resolve({ error: null }),
-  }
+  },
+  functions: {
+    invoke: (_name, _options = {}) =>
+      Promise.resolve({ data: null, error: 'Supabase edge functions are not available in MySQL mode' }),
+  },
 }
 
 // Export MySQL API as default for backward compatibility

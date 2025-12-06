@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { FileText, Calendar, AlertCircle } from 'lucide-react'
 import { mysqlAPI } from '../../lib/mysql-client'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 
 interface AIComplianceAddModalProps {
   isOpen: boolean
